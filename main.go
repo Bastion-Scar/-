@@ -46,21 +46,28 @@ func CycleInput(visibleText string) float64 {
 func main() {
 	chTax := make(chan float64)
 	chSal := make(chan float64)
+
 	firstSel := CycleInput("Сначала рассчитаем налоги. Введите оклад: ") //Salary - зарплата и оклад одновременно =))))))))))))))))))))))
 	prize := CycleInput("Введите премию: ")
 	extraExp := CycleInput("Введите надбавку за стаж: ")
+
 	wg.Add(1)
+
 	go Taxes(firstSel, prize, extraExp, chTax)
 
 	workHours := CycleInput("Считаем зарплату. Введите количество отработанных часов: ")
 	ratePerHour := CycleInput("Введите ставку за час: ")
 	extra := CycleInput("Введите надбавки: ")
 	deduct := CycleInput("Введите удержания: ")
+
 	wg.Add(1)
+
 	go Salary(workHours, ratePerHour, prize, extra, deduct, chSal)
 	taxes := <-chTax
 	salary := <-chSal
 	result := salary - taxes
+
 	wg.Wait()
+
 	fmt.Println("Чистая зарплата: ", result)
 }
